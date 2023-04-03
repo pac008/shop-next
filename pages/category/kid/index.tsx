@@ -3,23 +3,22 @@ import { ShopLayout } from "@/components/layouts";
 import { ProductList } from "@/components/products";
 import { useProducts } from "@/hooks";
 import { FullScreenLoading } from "@/components/ui";
-import { IProduct } from "@/interfaces";
 
-export default function HomePage() {
-  const { products, isError, isLoading } = useProducts("products");
+export default function KidPage() {
+  const { products, isError, isLoading } = useProducts("products?gender=kid");
 
   if (isError) return <div>Failed to load</div>;
 
   return (
     <ShopLayout
-      title="Teslo-Shop - Home"
-      pageDescription="Encuentra los mejores productos de teslo aqui"
+      title="Teslo-Shop - Kids"
+      pageDescription="Encuentra los mejores productos de teslo para niños aqui"
     >
       <Typography variant="h1" component="h1">
-        Tienda
+        Niños
       </Typography>
       <Typography variant="h2" component="h2" sx={{ mb: 1 }}>
-        Todos los productos
+        Productos para niños
       </Typography>
       {isLoading ? <FullScreenLoading /> : <ProductList products={products} />}
     </ShopLayout>

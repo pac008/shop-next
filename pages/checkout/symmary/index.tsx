@@ -10,8 +10,15 @@ import {
 } from "@mui/material";
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSymmary } from "@/components/cart";
+import { useContext, useEffect } from "react";
+import { CartContext } from "@/context";
 
 const SummaryPage = () => {
+  const { cart } = useContext(CartContext);
+  useEffect(() => {
+    console.log(cart);
+  }, [cart]);
+
   return (
     <ShopLayout title="Resumen de orden" pageDescription="resumen de la orden">
       <Typography variant="h1" component="h1">
@@ -27,7 +34,9 @@ const SummaryPage = () => {
               <Typography variant="h2">Resumen (3 productos)</Typography>
               <Divider sx={{ my: 1 }} />
               <Box display="flex" justifyContent="space-between">
-              <Typography variant="subtitle1">Dirección de entrega</Typography>
+                <Typography variant="subtitle1">
+                  Dirección de entrega
+                </Typography>
                 <Link
                   href="/checkout/address"
                   style={{ textDecoration: "underline" }}
@@ -36,7 +45,7 @@ const SummaryPage = () => {
                   Editar
                 </Link>
               </Box>
-              
+
               <Typography>Miguel Herrera</Typography>
               <Typography>24 rue de la mutualite</Typography>
               <Typography>Cholet</Typography>

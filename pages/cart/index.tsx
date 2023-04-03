@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSymmary } from "@/components/cart";
+import { useContext, useEffect } from "react";
+import { CartContext } from "@/context";
 
 const CartPage = () => {
   return (

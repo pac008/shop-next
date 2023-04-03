@@ -3,23 +3,22 @@ import { ShopLayout } from "@/components/layouts";
 import { ProductList } from "@/components/products";
 import { useProducts } from "@/hooks";
 import { FullScreenLoading } from "@/components/ui";
-import { IProduct } from "@/interfaces";
 
-export default function HomePage() {
-  const { products, isError, isLoading } = useProducts("products");
+export default function WomenPage() {
+  const { products, isError, isLoading } = useProducts("products?gender=women");
 
   if (isError) return <div>Failed to load</div>;
 
   return (
     <ShopLayout
-      title="Teslo-Shop - Home"
-      pageDescription="Encuentra los mejores productos de teslo aqui"
+      title="Teslo-Shop - Women"
+      pageDescription="Encuentra los mejores productos de mujeres aqui"
     >
       <Typography variant="h1" component="h1">
-        Tienda
+        Mujeres
       </Typography>
       <Typography variant="h2" component="h2" sx={{ mb: 1 }}>
-        Todos los productos
+        Productos para mujeres
       </Typography>
       {isLoading ? <FullScreenLoading /> : <ProductList products={products} />}
     </ShopLayout>

@@ -1,8 +1,8 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import { Typography, Grid, Chip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { ShopLayout } from "@/components/layouts";
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid/models";
+import { GridColDef, GridRenderCellParams, GridTreeNodeWithRender, GridValueGetterParams } from "@mui/x-data-grid/models";
 import Link from "next/link";
 
 const columns: GridColDef<any, any, any>[] = [
@@ -13,7 +13,7 @@ const columns: GridColDef<any, any, any>[] = [
     headerName: "Pagada",
     description: "Muestra información si está pagada la orden o no",
     width: 200,
-    renderCell: (params: GridValueGetterParams) => {
+    renderCell: (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => {
       return params.row.paid ? (
         <Chip color="success" label="Pagada" variant="outlined" />
       ) : (
@@ -26,7 +26,7 @@ const columns: GridColDef<any, any, any>[] = [
     headerName: "orden",
     width: 300,
     sortable: false,
-    renderCell: (params: GridValueGetterParams) => (
+    renderCell: (params: GridRenderCellParams<any, any, any, GridTreeNodeWithRender>) => (
       <Link style={{textDecoration: 'underline'}} href={`/orders/${params.row.order}`}>
         Ver orden
         
