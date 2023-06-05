@@ -16,6 +16,7 @@ import {
   AdminPanelSettings,
   CategoryOutlined,
   ConfirmationNumberOutlined,
+  DashboardOutlined,
   EscalatorWarningOutlined,
   FemaleOutlined,
   LoginOutlined,
@@ -25,23 +26,26 @@ import {
 } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
-import { UiContext } from "@/context";
+import { useContext, useMemo, useState } from "react";
+import { AuthContext, UiContext } from "@/context";
 
 export const SideMenu = () => {
   const router = useRouter();
   const { toggleSideMenu, isMenuOpen } = useContext(UiContext);
+  const { user, onLogout } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const userRole = useMemo(() => user?.role, [user]);
 
   const onSearchTerm = () => {
     if (searchTerm.trim().length === 0) return;
-    naviageTo(`/search/${searchTerm}`);
+    navigateTo(`/search/${searchTerm}`);
   };
 
-  const naviageTo = (url: string) => {
+  const navigateTo = (url: string) => {
     toggleSideMenu();
     router.push(url);
   };
+
   return (
     <Drawer
       open={isMenuOpen}
@@ -60,30 +64,36 @@ export const SideMenu = () => {
               placeholder="Buscar..."
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton onClick={onSearchTerm} aria-label="toggle password visibility">
-                    <SearchOutlined  />
+                  <IconButton
+                    onClick={onSearchTerm}
+                    aria-label="toggle password visibility"
+                  >
+                    <SearchOutlined />
                   </IconButton>
                 </InputAdornment>
               }
             />
           </ListItem>
+          {userRole && (
+            <>
+              <ListItem button>
+                <ListItemIcon>
+                  <AccountCircleOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Perfil"} />
+              </ListItem>
 
-          <ListItem button>
-            <ListItemIcon>
-              <AccountCircleOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Perfil"} />
-          </ListItem>
-
-          <ListItem button>
-            <ListItemIcon>
-              <ConfirmationNumberOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Mis Ordenes"} />
-          </ListItem>
+              <ListItem button onClick={() => navigateTo("/orders/history")}>
+                <ListItemIcon>
+                  <ConfirmationNumberOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Mis Ordenes"} />
+              </ListItem>
+            </>
+          )}
 
           <ListItem
-            onClick={() => naviageTo("/category/men")}
+            onClick={() => navigateTo("/category/men")}
             button
             sx={{ display: { xs: "", sm: "none" } }}
           >
@@ -94,7 +104,7 @@ export const SideMenu = () => {
           </ListItem>
 
           <ListItem
-            onClick={() => naviageTo("/category/women")}
+            onClick={() => navigateTo("/category/women")}
             button
             sx={{ display: { xs: "", sm: "none" } }}
           >
@@ -105,7 +115,7 @@ export const SideMenu = () => {
           </ListItem>
 
           <ListItem
-            onClick={() => naviageTo("/category/kid")}
+            onClick={() => navigateTo("/category/kid")}
             button
             sx={{ display: { xs: "", sm: "none" } }}
           >
@@ -114,44 +124,51 @@ export const SideMenu = () => {
             </ListItemIcon>
             <ListItemText primary={"Niños"} />
           </ListItem>
-
-          <ListItem button>
-            <ListItemIcon>
-              <VpnKeyOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Ingresar"} />
-          </ListItem>
-
-          <ListItem button>
-            <ListItemIcon>
-              <LoginOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Salir"} />
-          </ListItem>
-
+          {!userRole ? (
+            <ListItem
+              button
+              onClick={() => navigateTo(`/auth/login?p=${router.asPath}`)}
+            >
+              <ListItemIcon>
+                <VpnKeyOutlined />
+              </ListItemIcon>
+              <ListItemText primary={"Ingresar"} />
+            </ListItem>
+          ) : (
+            <ListItem button onClick={onLogout}>
+              <ListItemIcon>
+                <LoginOutlined />
+              </ListItemIcon>
+              <ListItemText primary={"Salir"} />
+            </ListItem>
+          )}
           {/* Admin */}
-          <Divider />
-          <ListSubheader>Admin Panel</ListSubheader>
+          {userRole === "admin" && (
+            <>
+              <Divider />
+              <ListSubheader>Admin Panel</ListSubheader>
 
-          <ListItem onClick={() => naviageTo("/")} button>
-            <ListItemIcon>
-              <CategoryOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Productos"} />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <ConfirmationNumberOutlined />
-            </ListItemIcon>
-            <ListItemText primary={"Ordenes"} />
-          </ListItem>
+              <ListItem onClick={() => navigateTo("/admin")} button>
+                <ListItemIcon>
+                  <DashboardOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Dashboard"} />
+              </ListItem>
+              <ListItem button onClick={() => navigateTo("/admin/orders")}>
+                <ListItemIcon>
+                  <ConfirmationNumberOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Ordenes"} />
+              </ListItem>
 
-          <ListItem button>
-            <ListItemIcon>
-              <AdminPanelSettings />
-            </ListItemIcon>
-            <ListItemText primary={"Usuarios"} />
-          </ListItem>
+              <ListItem button  onClick={() => navigateTo("/admin/users")}>
+                <ListItemIcon>
+                  <AdminPanelSettings />
+                </ListItemIcon>
+                <ListItemText primary={"Usuarios"} />
+              </ListItem>
+            </>
+          )}
         </List>
       </Box>
     </Drawer>

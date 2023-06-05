@@ -12,6 +12,11 @@ export const getProductBySlug = async (
     if (!product) {
       return null;
     }
+    product.images = product.images.map((image) => {
+      return image.includes("http")
+        ? image
+        : `${process.env.HOST_NAME}products/${image}`;
+    });
     return JSON.parse(JSON.stringify(product));
   } catch (error) {
     await db.disconnect();
@@ -38,7 +43,7 @@ export const getAllProductSlugs = async (): Promise<ProductSlug[] | null> => {
   }
 };
 
-export const getProductsByTerm = async (term: string):Promise<IProduct[]> => {
+export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
   term = term.toLowerCase();
   try {
     await db.connect();
@@ -52,25 +57,40 @@ export const getProductsByTerm = async (term: string):Promise<IProduct[]> => {
       await db.disconnect();
       return [];
     }
-    return products;
+    const updatedProducts = products.map((product) => {
+      product.images = product.images.map((image) => {
+        return image.includes("http")
+          ? image
+          : `${process.env.HOST_NAME}products/${image}`;
+      });
+      return product;
+    });
+    return updatedProducts;
   } catch (error) {
     console.log(error);
     await db.disconnect();
     return [];
   }
 };
-export const getAllProducts = async ():Promise<IProduct[]> => {
+export const getAllProducts = async (): Promise<IProduct[]> => {
   try {
     await db.connect();
     const products = await Product.find()
       .select("title price slug inStock images -_id")
       .lean();
     await db.disconnect();
-    return products;
+    const updatedProducts = products.map((product) => {
+      product.images = product.images.map((image) => {
+        return image.includes("http")
+          ? image
+          : `${process.env.HOST_NAME}products/${image}`;
+      });
+      return product;
+    });
+    return updatedProducts;
   } catch (error) {
     console.log(error);
     await db.disconnect();
     return [];
   }
 };
-

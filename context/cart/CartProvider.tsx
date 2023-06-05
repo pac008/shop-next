@@ -1,22 +1,33 @@
 import { FC, useEffect, useReducer } from "react";
 import { CartContext, cartReducer } from ".";
-import { ICartProduct } from "@/interfaces";
+import {
+  ICartProduct,
+  IOrder,
+  IOrderItem,
+  ShippingAddress,
+} from "@/interfaces";
 import Cookie from "js-cookie";
+import { tesloApi } from "@/api";
+import axios from "axios";
 
 export interface CartState {
+  isLoaded: boolean;
   cart: ICartProduct[];
   numberOfItems: number;
   subTotal: number;
   tax: number;
   total: number;
+  shippingAddress?: ShippingAddress;
 }
 
 export const CartInitialState: CartState = {
+  isLoaded: false,
   cart: [],
   numberOfItems: 0,
   subTotal: 0,
   tax: 0,
   total: 0,
+  shippingAddress: undefined,
 };
 
 interface Props {
@@ -68,6 +79,23 @@ export const CartProvider: FC<Props> = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const shippingAddress = {
+      firstName: Cookie.get("firstName") || "",
+      lastName: Cookie.get("lastName") || "",
+      address: Cookie.get("address") || "",
+      address2: Cookie.get("address2") || "",
+      zip: Cookie.get("zip") || "",
+      city: Cookie.get("city") || "",
+      country: Cookie.get("country") || "",
+      phone: Cookie.get("phone") || "",
+    };
+    dispatch({
+      type: "[Cart] - LoadAddress from Cookies",
+      payload: shippingAddress,
+    });
+  }, []);
+
   const updateCart = (product: ICartProduct) => {
     const exisProductInCart = state.cart.some(
       (p) => p._id === product._id && p.size === product.size
@@ -103,9 +131,65 @@ export const CartProvider: FC<Props> = ({ children }) => {
       payload: product,
     });
   };
+
+  const updateAddress = (address: ShippingAddress) => {
+    Cookie.set("firstName", address.firstName);
+    Cookie.set("lastName", address.lastName);
+    Cookie.set("address", address.address);
+    Cookie.set("address2", address.address2 || "");
+    Cookie.set("zip", address.zip);
+    Cookie.set("city", address.city);
+    Cookie.set("country", address.country);
+    Cookie.set("phone", address.phone);
+    dispatch({ type: "[Cart] - Update Address", payload: address });
+  };
+
+  const createOrder = async (): Promise<{
+    hasError: boolean;
+    message: string;
+  }> => {
+    if (!state.shippingAddress) {
+      throw new Error("No hay dirección de entrega");
+    }
+    const body: IOrder = {
+      orderItems: state.cart as unknown as IOrderItem[],
+      shippingAddress: state.shippingAddress,
+      numberOfItems: state.numberOfItems,
+      subTotal: state.subTotal,
+      tax: state.tax,
+      total: state.total,
+      isPaid: false,
+    };
+    try {
+      const { data } = await tesloApi.post("/orders", body);
+      dispatch({ type: "[Cart] - Order Complete" });
+      return {
+        hasError: false,
+        message: data._id,
+      };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return {
+          hasError: true,
+          message: error.response?.data.message,
+        };
+      }
+      return {
+        hasError: true,
+        message: "Error no controlado hable con el admin",
+      };
+    }
+  };
   return (
     <CartContext.Provider
-      value={{ ...state, updateCart, updateCartQuantity, removeProductInCart }}
+      value={{
+        ...state,
+        updateCart,
+        updateCartQuantity,
+        removeProductInCart,
+        updateAddress,
+        createOrder,
+      }}
     >
       {children}
     </CartContext.Provider>

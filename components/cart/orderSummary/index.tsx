@@ -3,8 +3,31 @@ import { Divider, Grid, Typography } from "@mui/material";
 import { CartContext } from "@/context";
 import { currency } from "@/utils";
 
-export const OrderSymmary = () => {
-  const { total, subTotal, numberOfItems, tax } = useContext(CartContext);
+interface Props {
+  totalProp?: number;
+  subTotalProp?: number;
+  numberOfItemsProp?: number;
+  taxProp?: number;
+}
+export const OrderSymmary = ({
+  totalProp,
+  subTotalProp,
+  numberOfItemsProp,
+  taxProp,
+}: Props) => {
+  const {
+    total: totalContext,
+    subTotal: subTotalContext,
+    numberOfItems: numberOfItemsContext,
+    tax: taxContext,
+  } = useContext(CartContext);
+
+  const total = totalProp ? totalProp : totalContext;
+  const subTotal = subTotalProp ? subTotalProp : subTotalContext;
+  const numberOfItems = numberOfItemsProp
+    ? numberOfItemsProp
+    : numberOfItemsContext;
+  const tax = taxProp ? taxProp : taxContext;
   return (
     <Grid container>
       <Grid item xs={6}>

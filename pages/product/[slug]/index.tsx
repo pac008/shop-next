@@ -19,7 +19,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   const [temCartProduct, setTemCartProduct] = useState<ICartProduct>({
     _id: product._id,
     description: product.description,
-    images: product.images[0],
+    image: product.images[0],
     inStock: product.inStock,
     price: product.price,
     size: undefined,
@@ -42,9 +42,6 @@ const ProductPage: NextPage<Props> = ({ product }) => {
 
   const addProductCart = () => {
     if (!temCartProduct.size) return;
-
-    // Llamar accion de context para agregar
-    console.log({ temCartProduct });
     updateCart(temCartProduct);
     router.push("/cart");
   };

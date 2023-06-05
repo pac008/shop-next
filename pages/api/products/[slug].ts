@@ -25,7 +25,7 @@ const getProductBySlug = async (
   try {
     await db.connect();
     const product = await Product.findOne({ slug })
-    //   .select("title price slug inStock images -_id")
+      //   .select("title price slug inStock images -_id")
       .lean();
 
     if (!product) {
@@ -35,6 +35,11 @@ const getProductBySlug = async (
         .json({ message: "no existe producto con ese slug " + slug });
     }
     await db.disconnect();
+    product.images = product.images.map((image) => {
+      return image.includes("http")
+        ? image
+        : `${process.env.HOST_NAME}products/${image}`;
+    });
     res.status(200).json(product);
   } catch (error) {
     console.log(error);

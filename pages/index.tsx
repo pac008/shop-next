@@ -7,7 +7,6 @@ import { IProduct } from "@/interfaces";
 
 export default function HomePage() {
   const { products, isError, isLoading } = useProducts("products");
-
   if (isError) return <div>Failed to load</div>;
 
   return (

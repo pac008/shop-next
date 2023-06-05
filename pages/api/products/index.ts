@@ -25,13 +25,21 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     if (gender !== "all" && SHOP_CONSTANTS.validGenders.includes(`${gender}`)) {
       condition = { gender };
     }
-    
-    const products = await Product.find(condition )
+
+    const products = await Product.find(condition)
       .select("title price slug inStock images -_id")
       .lean();
 
     await db.disconnect();
-    res.status(200).json(products);
+    const updatedProducts = products.map((product) => {
+      product.images = product.images.map((image) => {
+        return image.includes("http")
+          ? image
+          : `${process.env.HOST_NAME}products/${image}`;
+      });
+      return product;
+    });
+    res.status(200).json(updatedProducts);
   } catch (error) {
     await db.disconnect();
     return res.status(500).json({ message: "Algo salió mal" });

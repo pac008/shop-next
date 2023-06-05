@@ -9,13 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import { ItemCounter } from "@/components/ui";
-import { ICartProduct } from "@/interfaces";
+import { ICartProduct, IOrderItem } from "@/interfaces";
 import { CartContext } from "@/context";
 interface Props {
   isEditabled?: boolean;
+  products?: IOrderItem[];
 }
 
-export const CartList: FC<Props> = ({ isEditabled }) => {
+export const CartList: FC<Props> = ({ isEditabled, products }) => {
   const { updateCartQuantity, cart, removeProductInCart } = useContext(CartContext);
 
   const onUpdateQuantity = (
@@ -25,9 +26,11 @@ export const CartList: FC<Props> = ({ isEditabled }) => {
     product.quantity = newQuantityValue;
     updateCartQuantity(product);
   };
+
+  const productsToShow = products ? products : cart
   return (
     <>
-      {cart.map((product, i) => (
+      {productsToShow.map((product, i) => (
         <Grid
           container
           spacing={2}
@@ -41,7 +44,7 @@ export const CartList: FC<Props> = ({ isEditabled }) => {
                 <CardMedia
                   component="img"
                   sx={{ borderRadius: 5 }}
-                  image={`/products/${product.images}`}
+                  image={product.image}
                 />
               </CardActionArea>
             </Link>
@@ -56,10 +59,10 @@ export const CartList: FC<Props> = ({ isEditabled }) => {
               {isEditabled ? (
                 <ItemCounter
                   currentvalue={product.quantity}
-                  maxValue={product.inStock}
+                  maxValue={10}
                   index={i}
                   onUpdateQuantity={(newValue) =>
-                    onUpdateQuantity(product, newValue)
+                    onUpdateQuantity(product as ICartProduct, newValue)
                   }
                 />
               ) : (
@@ -81,7 +84,7 @@ export const CartList: FC<Props> = ({ isEditabled }) => {
             <Typography variant="subtitle1">${product.price}</Typography>
             {/* editable */}
             {isEditabled && (
-              <Button variant="text" color="secondary" onClick={() => removeProductInCart(product)}>
+              <Button variant="text" color="secondary" onClick={() => removeProductInCart(product as ICartProduct)}>
                 Remover
               </Button>
             )}
