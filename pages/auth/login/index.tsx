@@ -31,13 +31,13 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<FormData>();
   const [showError, setShowError] = useState(false);
-  const [providers, setProviders] = useState<any>({});
+  // const [providers, setProviders] = useState<any>({});
 
-  useEffect(() => {
-    getProviders().then((prov) => {
-      setProviders(prov);
-    });
-  }, []);
+  // useEffect(() => {
+  //   getProviders().then((prov) => {
+  //     setProviders(prov);
+  //   });
+  // }, []);
 
   const onLoginForm = async ({ email, password }: FormData) => {
     setShowError(false);
@@ -125,7 +125,7 @@ const LoginPage = () => {
               mt={1}
             >
               <Divider sx={{ width: "100%", mb: 2 }} />
-              {Object.values(providers).map((provider: any) => {
+              {/* {Object.values(providers).map((provider: any) => {
                 if (provider.id === 'credentials') return (<div key='credencials'></div>)
                 return (
                   <Button
@@ -139,7 +139,7 @@ const LoginPage = () => {
                     {provider.name}
                   </Button>
                 );
-              })}
+              })} */}
             </Grid>
           </Grid>
         </Box>
