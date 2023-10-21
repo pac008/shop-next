@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { getProviders, getSession, signIn } from "next-auth/react";
 import { GetServerSideProps } from "next";
@@ -25,31 +25,32 @@ type FormData = {
 
 const LoginPage = () => {
   const router = useRouter();
+  const { onLoginUser } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
   const [showError, setShowError] = useState(false);
-  // const [providers, setProviders] = useState<any>({});
+  const [providers, setProviders] = useState<any>({});
 
-  // useEffect(() => {
-  //   getProviders().then((prov) => {
-  //     setProviders(prov);
-  //   });
-  // }, []);
+  useEffect(() => {
+    getProviders().then((prov) => {
+      setProviders(prov);
+    });
+  }, []);
 
   const onLoginForm = async ({ email, password }: FormData) => {
     setShowError(false);
-    await signIn("credentials", { email, password });
-    // const isValidLogin = await onLoginUser(email, password);
-    // if (!isValidLogin) {
-    //   setShowError(true)
-    //   setTimeout(() => setShowError(false), 3000);
-    //   return;
-    // }
-    // const destination = router.query.p?.toString() || '/';
-    // router.replace(destination)
+    // await signIn("credentials", { email, password });
+    const isValidLogin = await onLoginUser(email, password);
+    if (!isValidLogin) {
+      setShowError(true)
+      setTimeout(() => setShowError(false), 3000);
+      return;
+    }
+    const destination = router.query.p?.toString() || '/';
+    router.replace(destination)
   };
   return (
     <AuthLayout title="Ingresar">
@@ -125,7 +126,7 @@ const LoginPage = () => {
               mt={1}
             >
               <Divider sx={{ width: "100%", mb: 2 }} />
-              {/* {Object.values(providers).map((provider: any) => {
+              {Object.values(providers).map((provider: any) => {
                 if (provider.id === 'credentials') return (<div key='credencials'></div>)
                 return (
                   <Button
@@ -139,7 +140,7 @@ const LoginPage = () => {
                     {provider.name}
                   </Button>
                 );
-              })} */}
+              })}
             </Grid>
           </Grid>
         </Box>
@@ -150,22 +151,22 @@ const LoginPage = () => {
 
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
-// export const getServerSideProps: GetServerSideProps = async ({
-//   req,
-//   query,
-// }) => {
-//   const session = await getSession({ req });
-//   const { p = "/" } = query;
-//   if (session) {
-//     return {
-//       redirect: {
-//         destination: p.toLocaleString(),
-//         permanent: false,
-//       },
-//     };
-//   }
-//   return {
-//     props: {},
-//   };
-// };
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req });
+  const { p = "/" } = query;
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toLocaleString(),
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};
 export default LoginPage;
