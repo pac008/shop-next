@@ -22,7 +22,7 @@ import { CartList, OrderSymmary } from "@/components/cart";
 import { dbOrders } from "@/database";
 import { IOrder } from "@/interfaces";
 import { countries } from "@/constants";
-import { tesloApi } from "@/api";
+import { tesloApi } from "@/apiaxios";
 import { useState } from "react";
 
 type OrderResponseBody = {

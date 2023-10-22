@@ -7,7 +7,7 @@ import {
   ShippingAddress,
 } from "@/interfaces";
 import Cookie from "js-cookie";
-import { tesloApi } from "@/api";
+import { tesloApi } from "@/apiaxios";
 import axios from "axios";
 
 export interface CartState {

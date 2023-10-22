@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useReducer } from 'react';
 import { AuthContext, authReducer } from './';
 import { IUser } from '@/interfaces';
-import { tesloApi } from '@/api';
+import { tesloApi } from '@/apiaxios';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useRouter } from 'next/router';
